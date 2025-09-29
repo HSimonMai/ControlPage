@@ -1,0 +1,35 @@
+/* Sidebar tipo overlay */
+.overlay-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background-color: #343a40;
+    overflow-x: hidden;
+    transition: width 0.3s;
+    z-index: 1000;
+    padding-top: 60px;
+}
+
+/* Estilo para los enlaces dentro de la sidebar */
+.overlay-sidebar .overlay-nav .nav-link {
+    color: #adb5bd;
+    padding: 10px 20px;
+    display: block;
+    font-size: 1.2rem;
+}
+
+.overlay-sidebar .overlay-nav .nav-link:hover {
+    background-color: #495057;
+    color: #ffffff;
+}
+
+/* Estilo para el botón de cierre de la sidebar */
+.overlay-sidebar .btn-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.5rem;
+    color: #ffffff;
+}

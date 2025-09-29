@@ -1,0 +1,185 @@
+/* Estilo general
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: #F5EFE6;
+    display: flex;
+    height: 100vh;
+    background-image: radial-gradient(circle at 20% 20%, rgba(235, 222, 205, 0.5), transparent 60%),
+                      radial-gradient(circle at 70% 70%, rgba(235, 222, 205, 0.5), transparent 60%),
+                      radial-gradient(circle at 50% 30%, rgba(235, 222, 205, 0.5), transparent 60%);
+    background-repeat: no-repeat;
+    background-size: 50%, 70%, 80%;
+}
+
+
+.perfil {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.perfil .logo {
+    width: 80px;
+    height: 80px;
+    background-color: #000;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+}
+
+.perfil h2 {
+    color: #FFFFFF;
+    font-size: 1.5em;
+}
+
+.sidebar ul {
+    list-style-type: none;
+}
+
+.sidebar ul li {
+    margin: 20px 0;
+}
+
+.sidebar ul li a {
+    color: #fde6c8;
+    text-decoration: none;
+    font-size: 1.2em;
+    padding: 10px;
+    display: block;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.institucion {
+    background-color: #d9c7a0;
+    color: #4b3d2a;
+    padding: 15px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+main {
+    margin-left: 270px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% - 270px);
+}
+
+.header {
+    background-color: #1A4D2E;
+    color: #FFFFFF;
+    text-align: center;
+    padding: 20px;
+    width: 200px;
+    border-radius: 8px;
+}
+
+.header h1 {
+    font-size: 2.5em;
+    text-transform: uppercase;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section h2 {
+    background-color: #4F6F52;
+    color: #FFFFFF;
+    padding: 10px;
+    width: 100px;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.courses {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+
+
+.courses button:hover {
+    background-color: #4F6F52;
+}
+
+#alumnos {
+    margin-top: 20px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#tabla-alumnos {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#tabla-alumnos th, #tabla-alumnos td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+#tabla-alumnos th {
+    background-color: #4F6F52;
+    color: white;
+}
+.perfil-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+    padding: 20px;
+    background-color: #4F6F52;
+    border-radius: 8px;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.perfil-header {
+    background-color: #1A4D2E;
+    padding: 20px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.perfil-icon {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.perfil-info {
+    background-color: #F5EFE6;
+    padding: 20px;
+    width: 100%;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.perfil-info h2 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    color: #1A4D2E;
+}
+
+.perfil-info p {
+    font-size: 1.2em;
+    color: #4b3d2a;
+} */

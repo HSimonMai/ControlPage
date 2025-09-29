@@ -1,0 +1,88 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f7fa;
+  color: #2c3e50;
+}
+
+body {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 30px 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(44, 62, 80, 0.1);
+  text-align: center;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: #34495e;
+}
+
+p {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  color: #555;
+}
+
+/* Lista de opciones */
+ul {
+  list-style: none;
+  margin-bottom: 40px;
+  padding-left: 0;
+}
+
+ul li {
+  margin: 15px 0;
+}
+
+ul li a {
+  text-decoration: none;
+  font-size: 1.2rem;
+  color: #2980b9;
+  padding: 10px 20px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  display: inline-block;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+ul li a:hover,
+ul li a:focus {
+  background-color: #2980b9;
+  color: white;
+  border-color: #1c5980;
+  outline: none;
+}
+
+/* Botón cerrar sesión */
+button {
+  background-color: #c0392b;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  padding: 12px 28px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(192, 57, 43, 0.3);
+  min-width: 160px;
+}
+
+button:hover,
+button:focus {
+  background-color: #922b21;
+  outline: none;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(146, 43, 33, 0.5);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 5px rgba(146, 43, 33, 0.4);
+}

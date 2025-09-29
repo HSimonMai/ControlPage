@@ -1,0 +1,82 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background-color: #f9f9f9;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  min-height: 100vh;
+}
+
+h2 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 2rem;
+  text-align: center;
+}
+
+p {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #555;
+}
+
+/* Contenedor para los botones */
+a {
+  text-decoration: none;
+  margin: 10px 0;
+  display: inline-block;
+}
+
+/* Estilo general para los botones */
+button {
+  background-color: #2980b9;
+  border: none;
+  color: white;
+  padding: 12px 28px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  min-width: 220px;
+}
+
+button:hover {
+  background-color: #3498db;
+  box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+}
+
+button:focus {
+  outline: 3px solid #2980b9;
+  outline-offset: 2px;
+}
+
+/* Separación extra para el grupo de botones cuando hay más de uno */
+a + a {
+  margin-left: 15px;
+}
+
+/* Responsive: en pantallas pequeñas, apilar botones verticalmente */
+@media (max-width: 480px) {
+  body {
+    padding: 20px 10px;
+  }
+  a {
+    display: block;
+    margin: 10px auto;
+  }
+  button {
+    width: 100%;
+    max-width: 300px;
+  }
+}

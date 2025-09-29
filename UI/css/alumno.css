@@ -1,0 +1,87 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background-color: #f9f9f9;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+p {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  color: #555;
+}
+
+/* Contenedor para los botones */
+a {
+  text-decoration: none;
+  margin: 10px 0;
+  display: inline-block;
+}
+
+/* Botones */
+button {
+  background-color: #2980b9;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  padding: 12px 28px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(41, 128, 185, 0.3);
+  min-width: 220px;
+}
+
+button:hover,
+button:focus {
+  background-color: #1c5980;
+  outline: none;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(28, 89, 128, 0.5);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 5px rgba(28, 89, 128, 0.4);
+}
+
+/* Mensaje de rol no asignado */
+p:last-of-type {
+  font-style: italic;
+  color: #a94442;
+  background-color: #f2dede;
+  padding: 12px 20px;
+  border-radius: 6px;
+  border: 1px solid #ebccd1;
+  max-width: 320px;
+  text-align: center;
+}
+
+/* Espaciado extra para el botón de cerrar sesión */
+a:last-of-type {
+  margin-top: 40px;
+}
+
+ul {
+  list-style: none; /* elimina los puntos */
+  padding-left: 0;  /* quita la sangría izquierda */
+  margin: 0;        /* quita el margen por defecto */
+}
