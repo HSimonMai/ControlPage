@@ -4,6 +4,12 @@ require_once("AbstractMapper.php");
 
 class UsuarioDAL extends AbstractMapper
 {
+    public function FindAllAsistencias(): array
+    {
+        $this->setConsulta("SELECT FechaAsistencia, ValorAsistencia FROM asistencias");
+        return $this->FindAll();
+    }
+
     public function UpdateUser($usuario)
     {
         $consulta = "UPDATE usuarios 
@@ -27,6 +33,7 @@ class UsuarioDAL extends AbstractMapper
 
     public function InsertarUsuario($usuario)
     {
+        // RECIBE LA CONTRASENA DESDE BLL YA HASHEADA
         $consulta = "INSERT INTO usuarios(DNI,Email,Contrasena,Nombre,Apellido,idTiposUsuarios) VALUES
         ('" . $usuario->getDni() . "',
         '" . $usuario->getEmail() . "',
@@ -38,7 +45,7 @@ class UsuarioDAL extends AbstractMapper
         return $this->Execute();
     }
 
-    //CONSEGUIR USUARIOS POR GMAIL
+    // Conseguir usuario por email
     public function getUsuarioByEmail($email): ?Usuario
     {
         $consulta = "SELECT * FROM usuarios WHERE Email = '$email' LIMIT 1";
@@ -91,21 +98,19 @@ class UsuarioDAL extends AbstractMapper
             $idTipoUsuario
         );
     }
-    public function AuthUsuario(string $nombreUsuario, string $contrasena): ?Usuario
+
+public function AuthUsuario(string $nombreUsuario, string $contrasena): ?Usuario
 {
-    // Buscamos el usuario por su nombre
-    $consulta = "SELECT * FROM usuarios WHERE Nombre = '$nombreUsuario' LIMIT 1";
+    // Permite login tanto por nombre como por email
+    $consulta = "SELECT * FROM usuarios WHERE Nombre = '$nombreUsuario' OR Email = '$nombreUsuario' LIMIT 1";
     $this->setConsulta($consulta);
 
-    // Ejecutamos Find() para obtener un objeto Usuario
     $usuario = $this->Find();
 
-    // Verificamos que exista y que la contraseña coincida
     if ($usuario instanceof Usuario && password_verify($contrasena, $usuario->getContrasena())) {
         return $usuario; // autenticación correcta
     }
 
     return null; // usuario no existe o contraseña incorrecta
 }
-
 }

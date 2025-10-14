@@ -1,23 +1,19 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-// Conectar
-$conn = new mysqli($host, $user, $pass, $db);
+require_once("../DAL/AsistenciaDAL.php");
 
-// Verificar conexión
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
+$mapper = new AsistenciaDAL();
 
-// Consulta
-$sql = "SELECT FechaAsistencia, ValorAsistencia FROM asistencias";
-$result = $conn->query($sql);
 
-// Mostrar resultados en tabla
-if ($result->num_rows > 0) {
+// --- Mostrar resultados ---
+if (!empty($asistencias)) {
     echo "<table border='1' cellpadding='5'>";
     echo "<tr><th>Fecha</th><th>Asistencia</th></tr>";
 
-    while ($row = $result->fetch_assoc()) {
+    foreach ($asistencias as $row) {
         echo "<tr>";
         echo "<td>" . $row['FechaAsistencia'] . "</td>";
         echo "<td>" . $row['ValorAsistencia'] . "</td>";
@@ -28,6 +24,4 @@ if ($result->num_rows > 0) {
 } else {
     echo "No hay registros de asistencia.";
 }
-
-$conn->close();
 ?>

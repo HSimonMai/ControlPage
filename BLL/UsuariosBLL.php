@@ -14,18 +14,43 @@ class UsuariosBLL
     {
         $usuarioDAL = new UsuarioDAL();
         $usuario = $usuarioDAL->AuthUsuario($nombreUsuario, $contrasena);
-        return $usuario; // devuelve null si no existe
+
+        if ($usuario) {
+            // INICIA SESSION SI NO ESTA INICIADA
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+
+            // GUARDA EL OBJ COMPLETO EN LA SESSION
+            $_SESSION['usuario'] = $usuario;
+        }
+
+        return $usuario; // devuelve el objeto o null si falló
     }
 
     public function GrabarUsuario(Usuario $usuario): int
     {
         $usuarioDAL = new UsuarioDAL();
+
+        // HASHEA LA CONTRASEÑA ANTES DE GUARDAR
+        $contrasenaPlano = $usuario->getContrasena();
+        $hash = password_hash($contrasenaPlano, PASSWORD_DEFAULT);
+        $usuario->setContrasena($hash);
+
         return $usuarioDAL->InsertarUsuario($usuario);
     }
 
     public function UpdateUsuario(Usuario $usuario): bool
     {
         $usuarioDAL = new UsuarioDAL();
+
+        // HASHEA LA CONTRASENA SI EL USUAIRO LA VUELVE A CAMBIAR
+        $contrasenaPlano = $usuario->getContrasena();
+        if (!empty($contrasenaPlano) && strlen($contrasenaPlano) < 60) {
+            $hash = password_hash($contrasenaPlano, PASSWORD_DEFAULT);
+            $usuario->setContrasena($hash);
+        }
+
         return $usuarioDAL->UpdateUser($usuario);
     }
 

@@ -1,0 +1,173 @@
+        /* Estilos personalizados para mejorar la apariencia */
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin-top: 20px;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .main-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin-bottom: 0;
+        }
+
+        .header-section h2 {
+            margin: 0;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            transform: translateX(-2px);
+            text-decoration: none;
+        }
+
+        .table-container {
+            padding: 20px;
+        }
+
+        .table {
+            margin-bottom: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            padding: 15px 10px;
+            vertical-align: middle;
+        }
+
+        .table tbody td {
+            padding: 12px 10px;
+            vertical-align: middle;
+            border-color: #e9ecef;
+            transition: background-color 0.2s ease;
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9ff;
+            transform: scale(1.01);
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .no-data {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #721c24;
+            font-style: italic;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        /* Iconos en la tabla para mejorar UX */
+        .gender-icon {
+            display: inline-block;
+            width: 20px;
+            text-align: center;
+        }
+
+        .gender-icon.male::before {
+            content: "\f222"; /* Icono de hombre */
+            color: #007bff;
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        .gender-icon.female::before {
+            content: "\f221"; /* Icono de mujer */
+            color: #e83e8c;
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        .gender-icon.other::before {
+            content: "\f007"; /* Icono neutral */
+            color: #6c757d;
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        /* Responsive: Ajustes para móviles */
+        @media (max-width: 768px) {
+            .table-container {
+                padding: 10px;
+                overflow-x: auto;
+            }
+
+            .table {
+                font-size: 0.9rem;
+            }
+
+            .header-section {
+                padding: 15px;
+                text-align: center;
+            }
+
+            .d-flex {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-back {
+                justify-content: center;
+            }
+        }
+
+        /* Animación de carga sutil */
+        .table tbody tr {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }

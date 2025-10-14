@@ -53,5 +53,6 @@ class AsistenciaDAL extends AbstractMapper
             $idTipoClase
         );
         return $asistencia;
-    }
+    
+}
 }

@@ -21,21 +21,67 @@ $apellido = method_exists($usuarioObj, 'getApellido') ? $usuarioObj->getApellido
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Profesor</title>
-    <link rel="stylesheet" href="css/profesor.css"> <!-- opcional -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/profesor.css">
 </head>
 <body>
-    <h2>Bienvenido Profesor <?php echo htmlspecialchars($nombre . " " . $apellido); ?></h2>
-    <p>Este es tu panel de profesor.</p>
 
-    <ul>
-        <li><a href="http://localhost/controlPage-main/UI/Alumnos.php?idCurso=39">📋 Ver lista de alumnos</a></li>
-        <li><a href="subirNotas.php">📚 Materias</a></li>
-        <li><a href="mensajes.php">🏫 Horarios</a></li>
-        <li><a href="alumno.php">🎓 Ver Perfil Del Alumno</a></li>
-    </ul>
+    <div class="container">
+        <div class="main-card">
+            <!-- Sección de bienvenida -->
+            <div class="welcome-section">
+                <h2>
+                    <i class="fas fa-chalkboard-teacher me-3"></i>
+                    Bienvenido, Profesor <?= htmlspecialchars($nombre . ' ' . $apellido) ?>!
+                </h2>
+                <p>Este es tu panel personal de profesor. Gestiona alumnos, asistencias y horarios.</p>
+            </div>
 
-    <br>
-    <a href="login.php"><button>Cerrar Sesión</button></a>
+            <!-- Sección de menú -->
+            <div class="menu-section">
+                <h3 class="menu-title">
+                    <i class="fas fa-list me-2"></i>Menú Principal
+                </h3>
+                <ul class="menu-list">
+                    <li>
+                        <a href="panelAlumno.php" class="menu-item">
+                            <i class="fas fa-users"></i>
+                            Ver lista de alumnos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="asistencias.php" class="menu-item">
+                            <i class="fas fa-calendar-check"></i>
+                            Ver Asistencias
+                        </a>
+                    </li>
+                    <li>
+                        <a href="temas.php" class="menu-item">
+                            <i class="fas fa-clock"></i>
+                            Temas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="alumno.php" class="menu-item">
+                            <i class="fas fa-user-graduate"></i>
+                            Ver Perfil del Alumno
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Sección de logout -->
+            <div class="logout-section">
+                <a href="login.php" class="btn-logout">
+                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
