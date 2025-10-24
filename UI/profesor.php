@@ -37,7 +37,7 @@ $apellido = method_exists($usuarioObj, 'getApellido') ? $usuarioObj->getApellido
                     <i class="fas fa-chalkboard-teacher me-3"></i>
                     Bienvenido, Profesor <?= htmlspecialchars($nombre . ' ' . $apellido) ?>!
                 </h2>
-                <p>Este es tu panel personal de profesor. Gestiona alumnos, asistencias y horarios.</p>
+                <p>Este es tu panel personal de profesor. Gestiona alumnos, asistencias y temas.</p>
             </div>
 
             <!-- Sección de menú -->
@@ -61,13 +61,13 @@ $apellido = method_exists($usuarioObj, 'getApellido') ? $usuarioObj->getApellido
                     <li>
                         <a href="temas.php" class="menu-item">
                             <i class="fas fa-clock"></i>
-                            Temas
+                            Libro De Temas
                         </a>
                     </li>
-                    <li>
-                        <a href="alumno.php" class="menu-item">
-                            <i class="fas fa-user-graduate"></i>
-                            Ver Perfil del Alumno
+                       <li>
+                        <a href="tutores.php" class="menu-item">
+                            <i class="fas fa-clock"></i>
+                            Contacto Con El Tutor
                         </a>
                     </li>
                 </ul>

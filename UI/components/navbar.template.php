@@ -55,6 +55,9 @@ class Navbar_template
                 <li class="nav-item">
                     <a class="nav-link" href="./cursos.php">Edicion de Cursos</a>
                 </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./gestion_profesores.php">Edición de Profesores</a>
+                </li>
                 
                 <!-- First Dropdown for Alumnos -->
                 <li class="nav-item dropdown">

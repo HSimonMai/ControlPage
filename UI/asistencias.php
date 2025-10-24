@@ -1,17 +1,16 @@
 <?php
-// Mostrar errores (opcional para depurar)
+// Mostrar errores (para depuración)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Conexión a la base de datos
 $host = "localhost";
-$user = "root"; // Cambiá si tu usuario es distinto
-$pass = "2901";     // Poné tu contraseña si corresponde
-$db = "control"; // Cambiá por el nombre real de tu base de datos
+$user = "root";
+$pass = "2901";
+$db = "control";
 
 $conn = new mysqli($host, $user, $pass, $db);
-
 if ($conn->connect_error) {
     die("Error de conexión: " . $conn->connect_error);
 }
@@ -26,71 +25,95 @@ $result = $conn->query($sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado de Asistencias</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link rel="stylesheet" href="css/asistencia.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #a7c7e7;
+        }
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .table thead {
+            background-color: #007bff;
+            color: white;
+        }
+        .attendance-present {
+            color: #198754;
+            font-weight: 600;
+        }
+        .attendance-absent {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        .no-data {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+    </style>
 </head>
-<body class="p-4">
+<body>
 
-    <div class="container">
-        <div class="main-card">
-            <div class="header-section d-flex justify-content-between align-items-center">
-                <h2 class="m-0">
-                    <i class="fas fa-calendar-check me-2"></i>Listado de Asistencias
-                </h2>
-                <a href="profesor.php" class="btn-back">
-                    <i class="fas fa-arrow-left"></i> Volver
-                </a>
-            </div>
-
-            <div class="table-container">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID Asistencia</th>
-                            <th>Fecha</th>
-                            <th>Valor Asistencia</th>
-                            <th>ID Alumno</th>
-                            <th>ID Tipo Clase</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if ($result && $result->num_rows > 0): ?>
-                            <?php while($row = $result->fetch_assoc()): ?>
-                                <?php 
-                                    $valor = htmlspecialchars($row['ValorAsistencia']);
-                                    $esPresente = ($valor == 1 || strtolower($valor) == 'presente' || strtolower($valor) == 'si');
-                                    $claseValor = $esPresente ? 'attendance-present' : 'attendance-absent';
-                                    $icono = $esPresente ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>';
-                                    $textoValor = $esPresente ? 'Presente' : 'Ausente';
-                                ?>
-                                <tr>
-                                    <td class="text-center fw-bold"><?= htmlspecialchars($row['idAsistencias']) ?></td>
-                                    <td class="text-center"><?= date('d/m/Y', strtotime(htmlspecialchars($row['FechaAsistencia']))) ?></td>
-                                    <td class="text-center">
-                                        <span class="attendance-value <?= $claseValor ?>">
-                                            <?= $icono ?> <?= $textoValor ?>
-                                        </span>
-                                    </td>
-                                    <td class="text-center"><?= htmlspecialchars($row['idAlumnos']) ?></td>
-                                    <td class="text-center"><?= htmlspecialchars($row['idtipoClase']) ?></td>
-                                </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="5" class="no-data text-center">
-                                    <i class="fas fa-calendar-times fa-3x mb-3"></i><br>
-                                    No hay asistencias registradas aún.
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container-fluid">
+    <span class="navbar-brand"><i class="bi bi-calendar-check"></i> Administrador</span>
+    <div>
+      <a href="profesor.php" class="btn btn-outline-light">
+        <i class="bi bi-arrow-left"></i> Volver
+      </a>
     </div>
+  </div>
+</nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- CONTENIDO -->
+<div class="container py-4">
+  <div class="card p-4">
+    <h2 class="text-center mb-4"><i class="bi bi-check2-square"></i> Listado de Asistencias</h2>
+
+    <table class="table table-striped table-hover align-middle text-center">
+      <thead>
+        <tr>
+          <th>ID Asistencia</th>
+          <th>Fecha</th>
+          <th>Valor Asistencia</th>
+          <th>ID Alumno</th>
+          <th>ID Tipo Clase</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php if ($result && $result->num_rows > 0): ?>
+          <?php while($row = $result->fetch_assoc()): ?>
+            <?php 
+              $valor = htmlspecialchars($row['ValorAsistencia']);
+              $esPresente = ($valor == 1 || strtolower($valor) == 'presente' || strtolower($valor) == 'si');
+              $claseValor = $esPresente ? 'attendance-present' : 'attendance-absent';
+              $icono = $esPresente ? '<i class="bi bi-check-circle-fill"></i>' : '<i class="bi bi-x-circle-fill"></i>';
+              $textoValor = $esPresente ? 'Presente' : 'Ausente';
+            ?>
+            <tr>
+              <td class="fw-bold"><?= htmlspecialchars($row['idAsistencias']) ?></td>
+              <td><?= date('d/m/Y', strtotime(htmlspecialchars($row['FechaAsistencia']))) ?></td>
+              <td class="<?= $claseValor ?>"><?= $icono ?> <?= $textoValor ?></td>
+              <td><?= htmlspecialchars($row['idAlumnos']) ?></td>
+              <td><?= htmlspecialchars($row['idtipoClase']) ?></td>
+            </tr>
+          <?php endwhile; ?>
+        <?php else: ?>
+          <tr>
+            <td colspan="5" class="no-data text-center p-4">
+              <i class="bi bi-calendar-x display-5 d-block mb-2"></i>
+              No hay asistencias registradas aún.
+            </td>
+          </tr>
+        <?php endif; ?>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 

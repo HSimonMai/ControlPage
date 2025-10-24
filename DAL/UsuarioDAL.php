@@ -45,7 +45,6 @@ class UsuarioDAL extends AbstractMapper
         return $this->Execute();
     }
 
-    // Conseguir usuario por email
     public function getUsuarioByEmail($email): ?Usuario
     {
         $consulta = "SELECT * FROM usuarios WHERE Email = '$email' LIMIT 1";
@@ -99,18 +98,32 @@ class UsuarioDAL extends AbstractMapper
         );
     }
 
-public function AuthUsuario(string $nombreUsuario, string $contrasena): ?Usuario
-{
-    // Permite login tanto por nombre como por email
-    $consulta = "SELECT * FROM usuarios WHERE Nombre = '$nombreUsuario' OR Email = '$nombreUsuario' LIMIT 1";
-    $this->setConsulta($consulta);
+    public function AuthUsuario(string $nombreUsuario, string $contrasena): ?Usuario
+    {
+        // Escapar comillas simples (sin acceder a la conexión directamente)
+        $nombreUsuario = str_replace("'", "''", $nombreUsuario);
 
-    $usuario = $this->Find();
+        // Permitir login tanto por nombre como por email
+        $consulta = "SELECT * FROM usuarios WHERE Nombre = '$nombreUsuario' OR Email = '$nombreUsuario' LIMIT 1";
+        $this->setConsulta($consulta);
 
-    if ($usuario instanceof Usuario && password_verify($contrasena, $usuario->getContrasena())) {
-        return $usuario; // autenticación correcta
+        $usuario = $this->Find();
+
+        if ($usuario instanceof Usuario) {
+            $hash = $usuario->getContrasena();
+
+            // Si la contraseña está hasheada
+            if (password_verify($contrasena, $hash)) {
+                return $usuario;
+            }
+
+            // Si está en texto plano (para compatibilidad)
+            if ($contrasena === $hash) {
+                return $usuario;
+            }
+        }
+
+        // Usuario no encontrado o credenciales incorrectas
+        return null;
     }
-
-    return null; // usuario no existe o contraseña incorrecta
-}
 }

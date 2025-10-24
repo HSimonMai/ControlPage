@@ -164,10 +164,10 @@ class Main_template
                         <label for="dni" class="form-label">DNI</label>
                         <input type="number" class="form-control" id="dni" name="dni" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="contrasena" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="contrasena" name="contrasena" required>
-                    </div>
+                    // <div class="mb-3">
+                    //     <label for="contrasena" class="form-label">Contraseña</label>
+                    //     <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                    // </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" required>

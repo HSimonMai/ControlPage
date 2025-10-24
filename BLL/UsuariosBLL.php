@@ -70,4 +70,5 @@ class UsuariosBLL
         $usuarioDAL = new UsuarioDAL();
         return $usuarioDAL->getCursoById($idUsuario);
     }
+    
 }
