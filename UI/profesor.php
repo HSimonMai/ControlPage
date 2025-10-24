@@ -53,12 +53,6 @@ $apellido = method_exists($usuarioObj, 'getApellido') ? $usuarioObj->getApellido
                         </a>
                     </li>
                     <li>
-                        <a href="asistencias.php" class="menu-item">
-                            <i class="fas fa-calendar-check"></i>
-                            Ver Asistencias
-                        </a>
-                    </li>
-                    <li>
                         <a href="temas.php" class="menu-item">
                             <i class="fas fa-clock"></i>
                             Libro De Temas
