@@ -1,61 +1,66 @@
 <?php
-
 session_start();
 
+require_once __DIR__ . '/../BLL/CursoBLL.php';
+
+// Verificar sesión activa
 if (!isset($_SESSION['profesor_id'])) {
     header("Location: login.php");
     exit();
 }
 
+// Verificar curso seleccionado o guardado
 if (!isset($_POST['curso_id']) && !isset($_SESSION['curso_id'])) {
     header("Location: seleccionar_curso.php");
     exit();
 }
 
+// Guardar curso seleccionado si viene por POST
 if (isset($_POST['curso_id'])) {
-    $_SESSION['curso_id'] = $_POST['curso_id']; // guardamos el curso seleccionado
-}
-
-$curso_id = $_SESSION['curso_id'];
-
-if (!isset($_SESSION['profesor_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-$conexion = new mysqli("localhost", "root", "2901", "control");
-if ($conexion->connect_error) {
-    die("Error de conexión: " . $conexion->connect_error);
+    $_SESSION['curso_id'] = $_POST['curso_id'];
 }
 
 $profesor_id = $_SESSION['profesor_id'];
+$nombreProfesor = $_SESSION['nombre_profesor'] ?? "Profesor";
 
-$sql = "SELECT c.idProfesorCurso, c.curso_id, c.asignatura, c.año_lectivo
-        FROM profesorcurso c
-        WHERE c.profesor_id = ?";
-$stmt = $conexion->prepare($sql);
-$stmt->bind_param("i", $profesor_id);
-$stmt->execute();
-$resultado = $stmt->get_result();
+// Obtener cursos mediante la capa BLL (sin tocar la BD directamente)
+$cursos = CursoBLL::obtenerCursosYAsignaturasPorProfesor($profesor_id);
 
-echo "<h2>Bienvenido, " . htmlspecialchars($_SESSION['nombre_profesor']) . "</h2>";
-echo "<h3>Mis cursos:</h3>";
-
-if ($resultado->num_rows > 0) {
-    echo "<table border='1' cellpadding='6' cellspacing='0'>";
-    echo "<tr><th>ID Curso</th><th>Asignatura</th><th>Año lectivo</th></tr>";
-    while ($fila = $resultado->fetch_assoc()) {
-        echo "<tr>";
-        echo "<td>" . htmlspecialchars($fila['curso_id']) . "</td>";
-        echo "<td>" . htmlspecialchars($fila['asignatura']) . "</td>";
-        echo "<td>" . htmlspecialchars($fila['año_lectivo']) . "</td>";
-        echo "</tr>";
-    }
-    echo "</table>";
-} else {
-    echo "<p>No tenés cursos asignados todavía.</p>";
-}
-
-$stmt->close();
-$conexion->close();
 ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Cursos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+    <div class="container">
+        <h2>Bienvenido, <?= htmlspecialchars($nombreProfesor) ?></h2>
+        <h3>Mis cursos:</h3>
+
+        <?php if (!empty($cursos)): ?>
+            <table class="table table-bordered table-striped mt-3">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID Curso</th>
+                        <th>Asignatura</th>
+                        <th>Año lectivo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($cursos as $curso): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($curso['curso_id']) ?></td>
+                            <td><?= htmlspecialchars($curso['asignatura']) ?></td>
+                            <td><?= htmlspecialchars($curso['año_lectivo']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <p>No tenés cursos asignados todavía.</p>
+        <?php endif; ?>
+    </div>
+</body>
+</html>
