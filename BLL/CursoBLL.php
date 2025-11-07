@@ -79,4 +79,10 @@ class CursoBLL
         $cursoDAL = new CursoDAL();
         return $cursoDAL->getCursosYAsignaturasPorProfesor($idProfesor);
     }
+    public static function obtenerCursoPorProfesorYId(int $idProfesor, int $idCurso): ?array
+{
+    $cursoDAL = new CursoDAL();
+    return $cursoDAL->findCursoPorProfesorYId($idProfesor, $idCurso);
+}
+
 }

@@ -5,50 +5,31 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 require_once("../BLL/AlumnoBLL.php");
+require_once("../BLL/CursoBLL.php");
 
-// Verificar sesión de profesor
+// 🔹 Verificar sesión del profesor
 if (!isset($_SESSION["idProfesor"])) {
     header("Location: login.php");
     exit;
 }
 
-// Verificar si se seleccionó un curso
+// 🔹 Verificar si se seleccionó un curso (por GET o ya en sesión)
 if (isset($_GET["idCurso"])) {
     $idCurso = (int) $_GET["idCurso"];
 
-    // Conexión a la base de datos
-    $conexion = new mysqli("localhost", "root", "2901", "control");
-    if ($conexion->connect_error) {
-        die("Error de conexión: " . $conexion->connect_error);
-    }
-
-    $sql = "
-        SELECT 
-            c.idCursos,
-            c.Año,
-            c.Division,
-            pc.asignatura,
-            pc.año_lectivo
-        FROM profesor_curso pc
-        INNER JOIN cursos c ON pc.curso_id = c.idCursos
-        WHERE pc.curso_id = ? AND pc.profesor_id = ?
-    ";
-    $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("ii", $idCurso, $_SESSION["idProfesor"]);
-    $stmt->execute();
-    $resultado = $stmt->get_result();
-    $curso = $resultado->fetch_assoc();
+    // ✅ Llamar al BLL (sin conexión directa)
+    $curso = CursoBLL::obtenerCursoPorProfesorYId($_SESSION["idProfesor"], $idCurso);
 
     if ($curso) {
         $_SESSION["cursoSeleccionado"] = $curso;
-        $_SESSION["idCursoSeleccionado"] = $idCurso; // Guardar ID para BLL
+        $_SESSION["idCursoSeleccionado"] = $idCurso;
     } else {
         header("Location: mis_cursos.php");
         exit;
     }
 }
 
-// Recuperar curso de la sesión
+// 🔹 Recuperar curso guardado
 $cursoSeleccionado = $_SESSION["cursoSeleccionado"] ?? null;
 if (!$cursoSeleccionado) {
     header("Location: mis_cursos.php");
@@ -131,7 +112,7 @@ $nombreProfesor = $_SESSION["nombreProfesor"] ?? "Profesor";
             </h2>
             <p>Estás gestionando el curso:
                 <strong class="text-primary">
-                    <?= htmlspecialchars($cursoSeleccionado["Año"]) ?>° <?= htmlspecialchars($cursoSeleccionado["Division"]) ?> - 
+                    <?= htmlspecialchars($cursoSeleccionado["Año"]) ?>° <?= htmlspecialchars($cursoSeleccionado["Division"]) ?> -
                     <?= htmlspecialchars($cursoSeleccionado["asignatura"]) ?> (<?= htmlspecialchars($cursoSeleccionado["año_lectivo"]) ?>)
                 </strong>
             </p>
@@ -141,12 +122,10 @@ $nombreProfesor = $_SESSION["nombreProfesor"] ?? "Profesor";
         <div class="menu-section mx-auto" style="max-width: 400px;">
             <h3 class="menu-title text-center"><i class="bi bi-list-task"></i> Menú Principal</h3>
 
-            <!-- Botón para ver lista de alumnos -->
             <a href="listaAlumnos.php" class="menu-item">
                 <i class="bi bi-people"></i> Ver lista de alumnos
             </a>
 
-            <!-- Mantener los demás botones como estaban, sin funcionalidad aún -->
             <a href="temas.php" class="menu-item">
                 <i class="bi bi-book"></i> Libro de Temas
             </a>

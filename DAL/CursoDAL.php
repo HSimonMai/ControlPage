@@ -140,5 +140,29 @@ public function getCursosYAsignaturasPorProfesor(int $idProfesor): array
 
     return $cursos;
 }
+public function findCursoPorProfesorYId(int $idProfesor, int $idCurso): ?array
+{
+    $consulta = "
+        SELECT 
+            c.idCursos,
+            c.Año,
+            c.Division,
+            pc.asignatura,
+            pc.año_lectivo
+        FROM profesor_curso pc
+        INNER JOIN cursos c ON pc.curso_id = c.idCursos
+        WHERE pc.curso_id = ? AND pc.profesor_id = ?
+    ";
+
+    $stmt = $this->conexion->prepare($consulta);
+    $stmt->bind_param("ii", $idCurso, $idProfesor);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+    $curso = $resultado->fetch_assoc();
+
+    $stmt->close();
+    return $curso ?: null;
+}
+
 
 }
