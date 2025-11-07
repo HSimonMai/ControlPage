@@ -1,6 +1,7 @@
 <?php
 require_once("../Entidades/Usuario.php");
 require_once("../DAL/UsuarioDAL.php");
+require_once("../BLL/CursoBLL.php");
 
 class UsuariosBLL
 {
@@ -16,23 +17,19 @@ class UsuariosBLL
         $usuario = $usuarioDAL->AuthUsuario($nombreUsuario, $contrasena);
 
         if ($usuario) {
-            // INICIA SESSION SI NO ESTA INICIADA
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
             }
-
-            // GUARDA EL OBJ COMPLETO EN LA SESSION
             $_SESSION['usuario'] = $usuario;
         }
 
-        return $usuario; // devuelve el objeto o null si falló
+        return $usuario;
     }
 
     public function GrabarUsuario(Usuario $usuario): int
     {
         $usuarioDAL = new UsuarioDAL();
 
-        // HASHEA LA CONTRASEÑA ANTES DE GUARDAR
         $contrasenaPlano = $usuario->getContrasena();
         $hash = password_hash($contrasenaPlano, PASSWORD_DEFAULT);
         $usuario->setContrasena($hash);
@@ -44,7 +41,6 @@ class UsuariosBLL
     {
         $usuarioDAL = new UsuarioDAL();
 
-        // HASHEA LA CONTRASENA SI EL USUAIRO LA VUELVE A CAMBIAR
         $contrasenaPlano = $usuario->getContrasena();
         if (!empty($contrasenaPlano) && strlen($contrasenaPlano) < 60) {
             $hash = password_hash($contrasenaPlano, PASSWORD_DEFAULT);
@@ -60,15 +56,16 @@ class UsuariosBLL
         return $usuarioDAL->getAllUsuarios();
     }
 
+    /**
+     * 🔹 Devuelve los cursos de un preceptor/profesor
+     */
     public static function obtenerCursos(int $idUsuario): array
     {
-        return CursoBLL::getCursosByIdPreceptor($idUsuario);
+        return CursoBLL::obtenerCursosPorProfesor($idUsuario); // ✅ ahora se llama correctamente de forma estática
     }
 
-    public static function getCursoByUsuario(int $idUsuario)
+    public static function getCursoByUsuario(int $idUsuario): array
     {
-        $usuarioDAL = new UsuarioDAL();
-        return $usuarioDAL->getCursoById($idUsuario);
+        return CursoBLL::obtenerCursosPorProfesor($idUsuario); // ✅ igual que arriba
     }
-    
 }

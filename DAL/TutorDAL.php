@@ -1,81 +1,69 @@
 <?php
-require_once(__DIR__."../../Entidades/Tutor.php");
-require_once("AbstractMapper.php");
+require_once(__DIR__ . "/../entidades/Tutor.php");
+require_once(__DIR__ . "/../entidades/Alumno.php");
+require_once(__DIR__ . "/AbstractMapper.php");
 
 class TutorDAL extends AbstractMapper
 {
+    public function findByCurso(int $idCurso): array
+    {
+        $this->setConsulta("
+            SELECT 
+                t.idTutores, 
+                t.Nombre AS TutorNombre, 
+                t.Apellido AS TutorApellido, 
+                t.Dni AS TutorDni,
+                t.Email, 
+                t.Telefono,
+                a.idAlumnos,
+                a.Nombre AS AlumnoNombre, 
+                a.Apellido AS AlumnoApellido, 
+                a.Dni AS AlumnoDni
+            FROM tutores t
+            INNER JOIN cursos_tutores ct ON t.idTutores = ct.idTutor
+            LEFT JOIN tutor_alumno ta ON t.idTutores = ta.idTutor
+            LEFT JOIN alumnos a ON ta.idAlumno = a.idAlumnos
+            WHERE ct.idCurso = ?
+            ORDER BY t.Apellido, t.Nombre, a.Apellido, a.Nombre
+        ");
 
-    public function InsertarTutor($tutor)
-    {
-        $consulta= "INSERT INTO tutores (Nombre,Apellido,Dni,Email,Telefono) VALUES
-        ('".$tutor->getNombre()."',
-        '".$tutor->getApellido()."',
-        '".$tutor->getDni()."',
-        '".$tutor->getEmail()."',
-        '".$tutor->getTelefono()."'
-        )";
-        $this->setConsulta($consulta);
-        $id= $this->Execute();
-        return $id;
-    }
-    public function findTutorByIdAlumno($idTutor)
-    {
-        $consulta= "SELECT * FROM tutores WHERE idTutores= '$idTutor'";
-        $this->setConsulta($consulta);
-        $resultado= $this->Find();
-        if($resultado == null)
-        {
-            return null;
+        $filas = $this->FindAll([$idCurso]);
+
+        // 🔹 Agrupar tutores y sus alumnos
+        $tutores = [];
+        foreach ($filas as $fila) {
+            $idTutor = $fila->id;
+            if (!isset($tutores[$idTutor])) {
+                $tutores[$idTutor] = $fila;
+            } else {
+                $tutores[$idTutor]->alumnos = array_merge(
+                    $tutores[$idTutor]->alumnos,
+                    $fila->alumnos
+                );
+            }
         }
-        return $resultado;
+        return array_values($tutores);
     }
 
-    public function findAllTutor()
+    protected function doLoad($columna): Tutor
     {
-        
-        $consulta= "SELECT * FROM tutores";
-        $this->setConsulta($consulta);
-        $resultado= $this->FindAll();
-        return $resultado;
-    }
+        $alumnos = [];
+        if (!empty($columna["AlumnoNombre"])) {
+            $alumnos[] = [
+                "nombre" => $columna["AlumnoNombre"],
+                "apellido" => $columna["AlumnoApellido"],
+                "dni" => $columna["AlumnoDni"]
+            ];
+        }
 
-
-    public function UpdateTutor($tutor)
-    {
-        $consulta="UPDATE tutores 
-        SET Nombre='" . $tutor->getNombre() . "',
-            Apellido='".$tutor->getApellido()."',
-            Dni='".$tutor->getDni()."',
-            Email='".$tutor->getEmail()."',
-            Telefono='".$tutor->getTelefono()."'
-            WHERE idTutores='" . $tutor->getId() . "';        
-        ";
-        $this->setConsulta($consulta);
-        $id= $this->Execute();
-        return $id;
-    }
-
-
-
-    public function doLoad($columna)
-    {
-        $id= (int) $columna["idTutores"];
-        $nombre= (string) $columna["Nombre"];
-        $apellido= (string) $columna["Apellido"];
-        $dni= (string) $columna["Dni"];
-        $email= (string) $columna["Email"];
-        $telefono= (string) $columna["Telefono"];
-        
-        $tutor= new Tutor(
-            $id,
-            $nombre,
-            $apellido,
-            $dni,
-            $email,
-            $telefono
+        return new Tutor(
+            id: (int)$columna["idTutores"],
+            nombre: $columna["TutorNombre"],
+            apellido: $columna["TutorApellido"],
+            dni: $columna["TutorDni"],
+            email: $columna["Email"],
+            telefono: $columna["Telefono"],
+            alumnos: $alumnos
         );
-
-        return $tutor;
-
     }
 }

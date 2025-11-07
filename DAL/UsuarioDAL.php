@@ -1,115 +1,95 @@
 <?php
-require_once("../Entidades/Usuario.php");
+require_once(__DIR__ . "/../Entidades/Usuario.php");
 require_once("AbstractMapper.php");
 
 class UsuarioDAL extends AbstractMapper
 {
-    public function FindAllAsistencias(): array
+    // 🔹 Obtener todas las asistencias (solo ejemplo)
+    public function findAllAsistencias(): array
     {
         $this->setConsulta("SELECT FechaAsistencia, ValorAsistencia FROM asistencias");
-        return $this->FindAll();
+        return $this->findAll();
     }
 
-    public function UpdateUser($usuario)
+    // 🔹 Actualizar usuario
+    public function updateUser(Usuario $usuario): bool
     {
-        $consulta = "UPDATE usuarios 
-            SET DNI='" . $usuario->getDni() . "',
-                Email='" . $usuario->getEmail() . "',
-                Contrasena='" . $usuario->getContrasena() . "',
-                Nombre='" . $usuario->getNombre() . "',
-                Apellido='" . $usuario->getApellido() . "',
-                idTiposUsuarios='" . $usuario->getIdTiposUsuarios() . "'
-            WHERE idUsuarios='" . $usuario->getId() . "';";   
-        $this->setConsulta($consulta);
-        return $this->Execute();
+        $sql = "UPDATE usuarios 
+                SET DNI = ?, Email = ?, Contrasena = ?, Nombre = ?, Apellido = ?, idTiposUsuarios = ?
+                WHERE idUsuarios = ?";
+        return $this->executeNonQuery($sql, [
+            $usuario->getDni(),
+            $usuario->getEmail(),
+            $usuario->getContrasena(),
+            $usuario->getNombre(),
+            $usuario->getApellido(),
+            $usuario->getIdTiposUsuarios(),
+            $usuario->getId()
+        ]);
     }
 
-    public function DeleteUser($id)
+    // 🔹 Eliminar usuario
+    public function deleteUser(int $id): bool
     {
-        $consulta = "DELETE FROM usuarios WHERE idUsuarios = '$id'";
-        $this->setConsulta($consulta);
-        return $this->Execute();
+        $sql = "DELETE FROM usuarios WHERE idUsuarios = ?";
+        return $this->executeNonQuery($sql, [$id]);
     }
 
-    public function InsertarUsuario($usuario)
+    // 🔹 Insertar usuario
+    public function insertarUsuario(Usuario $usuario): bool|int
     {
-        // RECIBE LA CONTRASENA DESDE BLL YA HASHEADA
-        $consulta = "INSERT INTO usuarios(DNI,Email,Contrasena,Nombre,Apellido,idTiposUsuarios) VALUES
-        ('" . $usuario->getDni() . "',
-        '" . $usuario->getEmail() . "',
-        '" . $usuario->getContrasena() . "',
-        '" . $usuario->getNombre() . "',
-        '" . $usuario->getApellido() . "',
-        '" . $usuario->getIdTiposUsuarios() . "')";
-        $this->setConsulta($consulta);
-        return $this->Execute();
+        $sql = "INSERT INTO usuarios (DNI, Email, Contrasena, Nombre, Apellido, idTiposUsuarios)
+                VALUES (?, ?, ?, ?, ?, ?)";
+        return $this->executeNonQuery($sql, [
+            $usuario->getDni(),
+            $usuario->getEmail(),
+            $usuario->getContrasena(),
+            $usuario->getNombre(),
+            $usuario->getApellido(),
+            $usuario->getIdTiposUsuarios()
+        ]);
     }
 
-    public function getUsuarioByEmail($email): ?Usuario
+    // 🔹 Obtener usuario por email
+    public function getUsuarioByEmail(string $email): ?Usuario
     {
-        $consulta = "SELECT * FROM usuarios WHERE Email = '$email' LIMIT 1";
-        $this->setConsulta($consulta);
-        $usuario = $this->Find();
-        if ($usuario instanceof Usuario) {
-            return $usuario;
+        $sql = "SELECT * FROM usuarios WHERE Email = ? LIMIT 1";
+        $resultado = $this->executeQuery($sql, [$email]);
+
+        if ($fila = $resultado->fetch_assoc()) {
+            return $this->doLoad($fila);
         }
         return null;
     }
 
+    // 🔹 Obtener todos los usuarios
     public function getAllUsuarios(): array
     {
-        $consulta = "SELECT * FROM usuarios";
-        $this->setConsulta($consulta);
-        return $this->FindAll();
+        $this->setConsulta("SELECT * FROM usuarios");
+        return $this->findAll();
     }
 
-    public function getUsuarioByIdCurso($idUsuario)
+    // 🔹 Obtener usuario por ID
+    public function getUsuarioById(int $idUsuario): ?Usuario
     {
-        $consulta = "SELECT * FROM usuarios WHERE idUsuarios= '$idUsuario'";
-        $this->setConsulta($consulta);
-        return $this->FindAll();
+        $sql = "SELECT * FROM usuarios WHERE idUsuarios = ?";
+        $resultado = $this->executeQuery($sql, [$idUsuario]);
+
+        if ($fila = $resultado->fetch_assoc()) {
+            return $this->doLoad($fila);
+        }
+        return null;
     }
 
-    public function getCursoById($idCurso)
+    // 🔹 Autenticación de usuario
+    public function authUsuario(string $nombreUsuario, string $contrasena): ?Usuario
     {
-        $consulta = "SELECT * FROM usuarios WHERE idUsuarios= '$idCurso'";
-        $this->setConsulta($consulta);
-        return $this->Find();
-    }
+        // Permite login tanto por nombre como por email
+        $sql = "SELECT * FROM usuarios WHERE Nombre = ? OR Email = ? LIMIT 1";
+        $resultado = $this->executeQuery($sql, [$nombreUsuario, $nombreUsuario]);
 
-    public function doLoad($columna)
-    {
-        $id = (int)$columna["idUsuarios"];
-        $dni = (string)$columna["DNI"];
-        $email = (string)$columna["Email"];
-        $contrasena = (string)$columna["Contrasena"];
-        $nombre = (string)$columna["Nombre"];
-        $apellido = (string)$columna["Apellido"];
-        $idTipoUsuario = (int)$columna["idTiposUsuarios"];
-
-        return new Usuario(
-            $id,
-            $dni,
-            $email,
-            $contrasena,
-            $nombre,
-            $apellido,
-            $idTipoUsuario
-        );
-    }
-
-    public function AuthUsuario(string $nombreUsuario, string $contrasena): ?Usuario
-    {
-        // Escapar comillas simples (sin acceder a la conexión directamente)
-        $nombreUsuario = str_replace("'", "''", $nombreUsuario);
-
-        // Permitir login tanto por nombre como por email
-        $consulta = "SELECT * FROM usuarios WHERE Nombre = '$nombreUsuario' OR Email = '$nombreUsuario' LIMIT 1";
-        $this->setConsulta($consulta);
-
-        $usuario = $this->Find();
-
-        if ($usuario instanceof Usuario) {
+        if ($fila = $resultado->fetch_assoc()) {
+            $usuario = $this->doLoad($fila);
             $hash = $usuario->getContrasena();
 
             // Si la contraseña está hasheada
@@ -117,7 +97,7 @@ class UsuarioDAL extends AbstractMapper
                 return $usuario;
             }
 
-            // Si está en texto plano (para compatibilidad)
+            // Si está en texto plano (modo compatibilidad)
             if ($contrasena === $hash) {
                 return $usuario;
             }
@@ -125,5 +105,19 @@ class UsuarioDAL extends AbstractMapper
 
         // Usuario no encontrado o credenciales incorrectas
         return null;
+    }
+
+    // 🔹 Cargar un usuario desde una fila
+    protected function doLoad(array $columna): Usuario
+    {
+        return new Usuario(
+            (int)$columna["idUsuarios"],
+            $columna["DNI"] ?? "",
+            $columna["Email"] ?? "",
+            $columna["Contrasena"] ?? "",
+            $columna["Nombre"] ?? "",
+            $columna["Apellido"] ?? "",
+            isset($columna["idTiposUsuarios"]) ? (int)$columna["idTiposUsuarios"] : null
+        );
     }
 }

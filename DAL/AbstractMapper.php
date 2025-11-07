@@ -1,76 +1,131 @@
 <?php
 abstract class AbstractMapper
 {
-    private $usuario = "root";
-    private $contrasena = "2901";
-    private $servidor = "localhost";
-    private $basededatos = "control";
+    // 🔹 Configuración de conexión
+    private string $usuario = "root";
+    private string $contrasena = "2901";
+    private string $servidor = "localhost";
+    private string $basededatos = "control";
 
-    protected $consulta;
+    // 🔹 Conexión disponible para todas las clases DAL
+    protected mysqli $conexion;
 
-    public function setConsulta($consulta): void
+    // 🔹 Consulta actual (para FindAll, FindOne, etc.)
+    protected string $consulta = "";
+
+    // 🔹 Constructor: se conecta automáticamente
+    public function __construct()
+    {
+        $this->conexion = new mysqli(
+            $this->servidor,
+            $this->usuario,
+            $this->contrasena,
+            $this->basededatos
+        );
+
+        if ($this->conexion->connect_error) {
+            die("❌ Error de conexión: " . $this->conexion->connect_error);
+        }
+
+        $this->conexion->set_charset("utf8mb4");
+    }
+
+    // 🔹 Permite que las clases hijas definan su consulta
+    protected function setConsulta(string $consulta): void
     {
         $this->consulta = $consulta;
     }
 
-    public function Execute(): int|string|bool
+    // 🔹 Carga los datos de una fila (las clases hijas implementan este método)
+    abstract protected function doLoad(array $fila);
+
+    // 🔹 Busca todos los registros según la consulta definida
+    protected function findAll(array $params = []): array
     {
-        $conexion = mysqli_connect($this->servidor, $this->usuario, $this->contrasena, $this->basededatos)
-            or die("Error al conectar: " . mysqli_connect_error());
-
-        mysqli_set_charset($conexion, 'utf8');
-
-        $ok = mysqli_query($conexion, $this->consulta);
-
-        if ($ok === false) {
-            $error = mysqli_error($conexion);
-            mysqli_close($conexion);
-            die("Error en la consulta: $error");
+        if (empty($this->consulta)) {
+            throw new Exception("⚠️ No se definió ninguna consulta SQL en el mapper.");
         }
 
-        $id = mysqli_insert_id($conexion);
-        mysqli_close($conexion);
+        $resultado = $this->executeQuery($this->consulta, $params);
+        $lista = [];
 
-        // Si fue INSERT devuelve id, si fue UPDATE/DELETE devuelve true
+        while ($fila = $resultado->fetch_assoc()) {
+            $lista[] = $this->doLoad($fila);
+        }
+
+        return $lista;
+    }
+
+    // 🔹 Método para ejecutar INSERT/UPDATE/DELETE
+    protected function executeNonQuery(string $sql, array $params = []): bool|int
+    {
+        $stmt = $this->conexion->prepare($sql);
+        if (!$stmt) {
+            die("❌ Error al preparar la consulta: " . $this->conexion->error);
+        }
+
+        if (!empty($params)) {
+            $tipos = "";
+            $valores = [];
+
+            foreach ($params as $param) {
+                $tipos .= match (gettype($param)) {
+                    "integer" => "i",
+                    "double"  => "d",
+                    default   => "s",
+                };
+                $valores[] = $param;
+            }
+
+            $stmt->bind_param($tipos, ...$valores);
+        }
+
+        if (!$stmt->execute()) {
+            die("❌ Error al ejecutar la consulta: " . $stmt->error);
+        }
+
+        $id = $stmt->insert_id;
+        $stmt->close();
+
         return $id > 0 ? $id : true;
     }
 
-    public function FindAll(): array
+    // 🔹 Método para ejecutar SELECT
+    protected function executeQuery(string $sql, array $params = []): mysqli_result
     {
-        $registros = [];
-        $conexion = mysqli_connect($this->servidor, $this->usuario, $this->contrasena, $this->basededatos)
-            or die("Error al conectar: " . mysqli_connect_error());
+        $stmt = $this->conexion->prepare($sql);
+        if (!$stmt) {
+            die("❌ Error al preparar la consulta: " . $this->conexion->error);
+        }
 
-        mysqli_set_charset($conexion, 'utf8');
-        $resultado = mysqli_query($conexion, $this->consulta);
+        if (!empty($params)) {
+            $tipos = "";
+            $valores = [];
 
-        if ($resultado) {
-            while ($columna = mysqli_fetch_assoc($resultado)) {
-                $registros[] = $this->doLoad($columna);
+            foreach ($params as $param) {
+                $tipos .= match (gettype($param)) {
+                    "integer" => "i",
+                    "double"  => "d",
+                    default   => "s",
+                };
+                $valores[] = $param;
             }
+
+            $stmt->bind_param($tipos, ...$valores);
         }
 
-        mysqli_close($conexion);
-        return $registros;
+        if (!$stmt->execute()) {
+            die("❌ Error al ejecutar la consulta: " . $stmt->error);
+        }
+
+        return $stmt->get_result();
     }
 
-    public function Find(): mixed
+    // 🔹 Destructor: cierra la conexión
+    public function __destruct()
     {
-        $conexion = mysqli_connect($this->servidor, $this->usuario, $this->contrasena, $this->basededatos)
-            or die("Error al conectar: " . mysqli_connect_error());
-
-        mysqli_set_charset($conexion, 'utf8');
-        $resultado = mysqli_query($conexion, $this->consulta);
-
-        $objeto = null;
-        if ($resultado && $columna = mysqli_fetch_assoc($resultado)) {
-            $objeto = $this->doLoad($columna);
+        if ($this->conexion) {
+            $this->conexion->close();
         }
-
-        mysqli_close($conexion);
-        return $objeto;
     }
-
-    // 🔹 Cada DAL debe implementar cómo mapear filas a objetos
-    abstract protected function doLoad($columna);
 }

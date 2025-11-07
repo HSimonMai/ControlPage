@@ -1,28 +1,28 @@
 <?php
-require_once("../Entidades/TipoUsuario.php");
-require_once("AbstractMapper.php");
+require_once(__DIR__ . "/../Entidades/TipoUsuario.php");
+require_once(__DIR__ . "/AbstractMapper.php");
 
-class TiposUsuauriosDAL extends AbstractMapper
+class TiposUsuariosDAL extends AbstractMapper
 {
-
-    //Retorna un array de objetos de tipo "TiposUsuarios"
-    public function getAllTipos()
+    /**
+     * 🔹 Retorna todos los tipos de usuarios
+     * @return TipoUsuario[]
+     */
+    public function getAllTipos(): array
     {
-        $consulta= "SELECT * FROM tiposusuarios";
-        $this->setConsulta($consulta);
-        $id= $this->FindAll();
-        return $id;
+        // ✅ Asignamos la consulta directamente (sin setConsulta)
+        $this->consulta = "SELECT * FROM tiposusuarios";
+        return $this->FindAll();
     }
 
-    public function doLoad($columna)
+    /**
+     * 🔹 Mapea una fila del resultado a un objeto TipoUsuario
+     */
+    protected function doLoad($columna): TipoUsuario
     {
-        $id= (int) $columna["idTiposUsuarios"];
-        $tipo= (string) $columna["TipoUsuario"];
-        $tiposUsuarios= new TipoUsuario(
-            $id,
-            $tipo
+        return new TipoUsuario(
+            (int)($columna["idTiposUsuarios"] ?? 0),
+            (string)($columna["TipoUsuario"] ?? "")
         );
-        return $tiposUsuarios;
-
     }
 }

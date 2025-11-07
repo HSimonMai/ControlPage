@@ -56,7 +56,7 @@ if (!empty($_POST["btningresar"])) {
                     // Guardamos el idProfesor real en sesión
                     if (!empty($idProfesor)) {
                         $_SESSION["idProfesor"] = $idProfesor;
-                        header('Location: ../UI/seleccionar_materia.php');
+                        header('Location: ../UI/mis_cursos.php');
                         exit;
                     } else {
                         $_SESSION['error_message'] = "No se encontró un profesor asociado a este usuario.";

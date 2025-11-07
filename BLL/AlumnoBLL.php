@@ -1,70 +1,24 @@
 <?php
-require_once("../DAL/AlumnoDAL.php");
+require_once __DIR__ . "/../DAL/AlumnoDAL.php";
 
 class AlumnoBLL
 {
+    private AlumnosDAL $dal;
 
-    public function GrabarAlumno($alumno)
+    public function __construct()
     {
-        $alumnoDAL = new AlumnoDAL();
-        $id = $alumnoDAL->InsertarAlumno($alumno);
-        return $id;
-    }
-    public function getIdAlumnoDni($dni)
-    {
-        $alumnoDAL = new AlumnoDAL();
-        $id = $alumnoDAL->findId($dni);
-        return $id;
+        $this->dal = new AlumnosDAL();
     }
 
-    public static function getAlumnoById($idAlumno)
-    {
-
-        $alumnoDAL = new AlumnoDAL();
-        $id = $alumnoDAL->findId($idAlumno);
-        return $id;
-    }
-
-    public static function getAlumnosByIdCurso($idCurso)
+    /**
+     * 🔹 Devuelve todos los alumnos de un curso
+     */
+    public function getAlumnosByIdCurso(int $idCurso): array
     {
         try {
-            if ($idCurso <= 0) {
-                throw new InvalidArgumentException("El ID del curso debe ser mayor a cero.");
-            }
-
-            $alumnoDAL = new AlumnoDAL();
-            $lista = $alumnoDAL->findAlumnosByIdCurso($idCurso);
-
-            if ($lista === null || empty($lista)) {
-                return null;
-            }
-
-            return $lista;
+            return $this->dal->getByCurso($idCurso);
         } catch (Exception $e) {
-            // Log del error
-            error_log("Error en getAlumnosByIdCurso: " . $e->getMessage());
-            return null;
+            die("❌ Error al obtener los alumnos del curso: " . $e->getMessage());
         }
-    }
-
-    public static function listaAlumnos(): array
-    {
-        $AlumnoDAL = new AlumnoDAL();
-        $lista = $AlumnoDAL->getAllAlumnos();
-        return $lista;
-    }
-
-    public function deleteAlumno($id)
-    {
-        $alumnoDAL = new AlumnoDAL();
-        $resultado = $alumnoDAL->deleteAlumno($id);
-        return $resultado;
-    }
-
-    public function UpdateAlumno($alumno)
-    {
-        $alumnoDAL = new AlumnoDAL();
-        $resultado = $alumnoDAL->UpdateAlumno($alumno);
-        return $resultado;
     }
 }

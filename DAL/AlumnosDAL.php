@@ -4,20 +4,19 @@ require_once __DIR__ . "/../Entidades/Alumno.php";
 
 class AlumnosDAL extends AbstractMapper
 {
-    // 🔹 Mapea una fila del resultado a un objeto Alumno
-    protected function doLoad(array $fila): Alumno
+    protected function doLoad(array $columna): Alumno
     {
         return new Alumno(
-            $fila["idAlumnos"],   // nombre correcto según tu BD
-            $fila["Nombre"],      // cuidado con las mayúsculas
-            $fila["Apellido"],
-            $fila["DNI"]
+            $columna["idAlumnos"],          // 🔹 coincide con tu tabla
+            $columna["Nombre"],             // 🔹 mayúscula según tu BD
+            $columna["Apellido"],
+            $columna["DNI"]
         );
     }
 
-    // 🔹 Devuelve todos los alumnos de un curso (por idCursos)
     public function getByCurso(int $idCurso): array
     {
+        // 🔹 usar idCursos (plural) que es la FK real
         $this->setConsulta("
             SELECT idAlumnos, Nombre, Apellido, DNI
             FROM alumnos

@@ -1,92 +1,83 @@
 <?php
+// Entidades/Cursos.php
 
-class Cursos
+class Curso
 {
-    public int $id;
-    private int $ano;
-    private string $division;
+    private ?int $idCursos;
+    private ?int $Año;
+    private ?string $Division;
+    private ?string $asignatura;
+    private ?string $anio_lectivo;
 
-    private int $idUsuario;
-
-    public function __construct(int $id, int $ano, string $division, int $idUsuario)
-    {
-        $this->id = $id;
-        $this->ano = $ano;
-        $this->division = $division;
-        $this->idUsuario = $idUsuario;
+    public function __construct(
+        ?int $idCursos = null,
+        ?int $Año = null,
+        ?string $Division = null,
+        ?string $asignatura = null,
+        ?string $anio_lectivo = null
+    ) {
+        $this->idCursos = $idCursos;
+        $this->Año = $Año;
+        $this->Division = $Division;
+        $this->asignatura = $asignatura;
+        $this->anio_lectivo = $anio_lectivo;
     }
 
-
-
-    /**
-     * Get the value of id
-     */
-    public function getId(): int
+    // --- Getters ---
+    public function getId(): ?int
     {
-        return $this->id;
+        return $this->idCursos;
     }
 
-    /**
-     * Set the value of id
-     */
-    public function setId(int $id): self
+    public function getAno(): ?int
     {
-        $this->id = $id;
-
-        return $this;
+        return $this->Año;
     }
 
-    /**
-     * Get the value of ano
-     */
-    public function getAno(): int
+    public function getDivision(): ?string
     {
-        return $this->ano;
+        return $this->Division;
     }
 
-    /**
-     * Set the value of ano
-     */
-    public function setAno(int $ano): self
+    public function getAsignatura(): ?string
     {
-        $this->ano = $ano;
-
-        return $this;
+        return $this->asignatura;
     }
 
-    /**
-     * Get the value of division
-     */
-    public function getDivision(): string
+    public function getAnioLectivo(): ?string
     {
-        return $this->division;
+        return $this->anio_lectivo;
     }
 
-    /**
-     * Set the value of division
-     */
-    public function setDivision(string $division): self
+    // --- Setters ---
+    public function setId(?int $id): void
     {
-        $this->division = $division;
-
-        return $this;
+        $this->idCursos = $id;
     }
 
-    /**
-     * Get the value of idUsuario
-     */
-    public function getIdUsuario(): int
+    public function setAno(?int $ano): void
     {
-        return $this->idUsuario;
+        $this->Año = $ano;
     }
 
-    /**
-     * Set the value of idUsuario
-     */
-    public function setIdUsuario(int $idUsuario): self
+    public function setDivision(?string $division): void
     {
-        $this->idUsuario = $idUsuario;
+        $this->Division = $division;
+    }
 
-        return $this;
+    public function setAsignatura(?string $asignatura): void
+    {
+        $this->asignatura = $asignatura;
+    }
+
+    public function setAnioLectivo(?string $anio): void
+    {
+        $this->anio_lectivo = $anio;
+    }
+
+    // --- Método auxiliar ---
+    public function getNombreCompleto(): string
+    {
+        return trim("{$this->Año}° {$this->Division}");
     }
 }

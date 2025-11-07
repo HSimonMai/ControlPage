@@ -1,15 +1,20 @@
 <?php
-$conexion = new mysqli("localhost", "root", "2901", "control");
+session_start();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-if ($conexion->connect_error) {
-    die("Error de conexión: " . $conexion->connect_error);
+require_once(__DIR__ . '/../Controladores/TutorController.php');
+
+if (!isset($_SESSION["idCursoSeleccionado"])) {
+    echo "<div style='margin:20px; color:red; font-weight:bold;'>⚠️ No hay curso seleccionado.</div>";
+    exit;
 }
 
-$sql = "SELECT * FROM tutores";
-$resultado = $conexion->query($sql);
+$idCurso = $_SESSION["idCursoSeleccionado"];
 
-// Supongamos que $faltas es el número de faltas del alumno
-$faltas = 4; // Podés cambiar esto dinámicamente según el alumno
+$controller = new TutorController();
+$tutores = $controller->listarPorCurso($idCurso);
 ?>
 
 <!DOCTYPE html>
@@ -18,37 +23,12 @@ $faltas = 4; // Podés cambiar esto dinámicamente según el alumno
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tutores</title>
-
-<!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-
-<style>
-body {
-    background-color: #a7c7e7;
-}
-.card {
-    border-radius: 1rem;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-}
-.alerta {
-    background-color: #ffc107;
-    color: #000;
-    padding: 15px;
-    text-align: center;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-weight: bold;
-}
-.table thead {
-    background-color: #007bff;
-    color: white;
-}
-</style>
+<link rel="stylesheet" href="css/tutores.css">
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
         <span class="navbar-brand"><i class="bi bi-people-fill"></i> Tutores</span>
@@ -59,44 +39,49 @@ body {
 </nav>
 
 <div class="container py-4">
-    <!-- Alerta -->
-    <?php if ($faltas > 3): ?>
-        <div class="alerta">
-            ⚠️ Si el alumno tiene más de 3 faltas, se notificará a los tutores.
-        </div>
-    <?php endif; ?>
-
-    <div class="card p-4">
+    <div class="card p-4 shadow-sm">
         <h2 class="text-center mb-4">
-            <i class="bi bi-journal-check"></i> Lista de Tutores
+            <i class="bi bi-journal-check"></i> Tutores del curso seleccionado
         </h2>
 
-        <table class="table table-striped table-hover align-middle text-center">
-            <thead>
+        <table class="table table-striped table-hover text-center">
+            <thead class="table-dark">
                 <tr>
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>DNI</th>
                     <th>Email</th>
                     <th>Teléfono</th>
+                    <th>Alumnos a su cargo</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if ($resultado && $resultado->num_rows > 0): ?>
-                    <?php while($fila = $resultado->fetch_assoc()): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($fila['Nombre']) ?></td>
-                        <td><?= htmlspecialchars($fila['Apellido']) ?></td>
-                        <td><?= htmlspecialchars($fila['Dni']) ?></td>
-                        <td><?= htmlspecialchars($fila['Email']) ?></td>
-                        <td><?= htmlspecialchars($fila['Telefono']) ?></td>
-                    </tr>
-                    <?php endwhile; ?>
+                <?php if (count($tutores) > 0): ?>
+                    <?php foreach ($tutores as $t): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($t->nombre) ?></td>
+                            <td><?= htmlspecialchars($t->apellido) ?></td>
+                            <td><?= htmlspecialchars($t->dni) ?></td>
+                            <td><?= htmlspecialchars($t->email) ?></td>
+                            <td><?= htmlspecialchars($t->telefono) ?></td>
+                            <td>
+                                <ul class="list-unstyled mb-0">
+                                    <?php if (count($t->alumnos) > 0): ?>
+                                        <?php foreach ($t->alumnos as $al): ?>
+                                            <li>👨‍🎓 <?= htmlspecialchars($al['nombre'] . ' ' . $al['apellido'] . ' (' . $al['dni'] . ')') ?></li>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <li class="text-muted">Sin alumnos asignados</li>
+                                    <?php endif; ?>
+                                </ul>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="5" class="text-center text-muted">
+                        <td colspan="6" class="text-muted py-4">
                             <i class="bi bi-person-x display-6 d-block mb-2"></i>
-                            No hay tutores registrados.
+                            No hay tutores registrados para este curso.
                         </td>
                     </tr>
                 <?php endif; ?>
@@ -108,5 +93,3 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-<?php $conexion->close(); ?>

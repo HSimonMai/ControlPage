@@ -1,145 +1,147 @@
-<?php 
-
-require_once(__DIR__."/../Entidades/Profesor.php");
+<?php
+require_once(__DIR__ . "/../Entidades/Profesor.php");
 require_once("AbstractMapper.php");
-
-// <?php
-// require_once(__DIR__ . "/../../Entidades/Profesor.php");
-// require_once("AbstractMapper.php");
 
 class ProfesorDAL extends AbstractMapper
 {
-    
+    // 🔹 Devuelve todos los profesores activos
     public function getAllProfesores(): array
     {
-        $consulta = "SELECT * FROM profesores WHERE activo = 1 ORDER BY apellido, nombre";
-        $this->setConsulta($consulta);
-        $lista = $this->FindAll();
-        return $lista;
+        $this->setConsulta("SELECT * FROM profesores WHERE activo = 1 ORDER BY apellido, nombre");
+        return $this->findAll();
     }
 
-
-    public function getProfesorById($idProfesor)
+    // 🔹 Busca un profesor por su ID
+    public function getProfesorById(int $idProfesor): ?Profesor
     {
-        $consulta = "SELECT * FROM profesores WHERE idProfesores = '$idProfesor'";
-        $this->setConsulta($consulta);
-        $resultado = $this->Find();
-        return $resultado;
+        $sql = "SELECT * FROM profesores WHERE idProfesores = ?";
+        $resultado = $this->executeQuery($sql, [$idProfesor]);
+
+        if ($fila = $resultado->fetch_assoc()) {
+            return $this->doLoad($fila);
+        }
+
+        return null;
     }
 
-    public function getProfesorByDni($dni)
+    // 🔹 Busca un profesor por su DNI
+    public function getProfesorByDni(string $dni): ?Profesor
     {
-        $consulta = "SELECT * FROM profesores WHERE dni = '$dni'";
-        $this->setConsulta($consulta);
-        $resultado = $this->Find();
-        return $resultado;
+        $sql = "SELECT * FROM profesores WHERE dni = ?";
+        $resultado = $this->executeQuery($sql, [$dni]);
+
+        if ($fila = $resultado->fetch_assoc()) {
+            return $this->doLoad($fila);
+        }
+
+        return null;
     }
 
-    
-    public function getProfesorByUsuarioId($usuarioId)
+    // 🔹 Busca un profesor por ID de usuario
+    public function getProfesorByUsuarioId(int $usuarioId): ?Profesor
     {
-        $consulta = "SELECT * FROM profesores WHERE usuario_id = '$usuarioId'";
-        $this->setConsulta($consulta);
-        $resultado = $this->Find();
-        return $resultado;
+        $sql = "SELECT * FROM profesores WHERE usuario_id = ?";
+        $resultado = $this->executeQuery($sql, [$usuarioId]);
+
+        if ($fila = $resultado->fetch_assoc()) {
+            return $this->doLoad($fila);
+        }
+
+        return null;
     }
 
-
-    public function InsertarProfesor($dni, $nombre, $apellido, $email, $usuario_id)
-{
-    $sql = "INSERT INTO profesores (dni, nombre, apellido, email, usuario_id, activo, created_at) 
-            VALUES ('$dni', '$nombre', '$apellido', '$email', $usuario_id, 1, NOW())";
-        $this->setConsulta($sql);
-        return $this->Execute();
-    
-}
-
-    
-    public function UpdateProfesor($profesor)
+    // 🔹 Inserta un nuevo profesor
+    public function insertarProfesor(Profesor $profesor): bool|int
     {
-        $consulta = "UPDATE profesores 
-        SET 
-            dni='" . $profesor->getDni() . "',
-            nombre='" . $profesor->getNombre() . "',
-            apellido='" . $profesor->getApellido() . "',
-            email='" . $profesor->getEmail() . "',
-            telefono='" . $profesor->getTelefono() . "'
-        WHERE idProfesores='" . $profesor->getId() . "'";
+        $sql = "INSERT INTO profesores (dni, nombre, apellido, email, usuario_id, activo, created_at)
+                VALUES (?, ?, ?, ?, ?, 1, NOW())";
 
-        $this->setConsulta($consulta);
-        $id = $this->Execute();
-        return $id;
+        return $this->executeNonQuery($sql, [
+            $profesor->getDni(),
+            $profesor->getNombre(),
+            $profesor->getApellido(),
+            $profesor->getEmail(),
+            $profesor->getUsuarioId()
+        ]);
     }
 
-   
-    public function deleteProfesor($id)
+    // 🔹 Actualiza un profesor existente
+    public function updateProfesor(Profesor $profesor): bool
     {
-        $consulta = "UPDATE profesores SET activo = 0 WHERE idProfesores = '$id'";
-        $this->setConsulta($consulta);
-        $resultado = $this->Execute();
-        return $resultado;
+        $sql = "UPDATE profesores SET 
+                    dni = ?, 
+                    nombre = ?, 
+                    apellido = ?, 
+                    email = ?, 
+                    telefono = ?
+                WHERE idProfesores = ?";
+
+        return $this->executeNonQuery($sql, [
+            $profesor->getDni(),
+            $profesor->getNombre(),
+            $profesor->getApellido(),
+            $profesor->getEmail(),
+            $profesor->getTelefono(),
+            $profesor->getId()
+        ]);
     }
 
-
-    public function EliminarPorUsuarioId($usuario_id)
-{
-    $sql = "DELETE FROM profesores WHERE usuario_id = $usuario_id";
-    $this->setConsulta($sql);
-    return $this->Execute();
-}
-
-    //eliminar profesor
-
-// public function deleteProfesor($idProfesor){
-
-//     $consulta="DELETE * FROM profesores WHERE idProfesores = '$idProfesor'";
-//     $this->setConsulta($consulta);
-//     $resultado = $this->Execute();
-//     return $resultado;
-// }
-
-public function asignarCursoAProfesor(){
-    
-
-}
-
-public function getCursosDelProfesor(){
-
-}
-
-public function eliminarCursoDelProfesor(){
-
-}
-
-
-
-
-
-    public function doLoad($columna)
+    // 🔹 Elimina (lógicamente) un profesor
+    public function deleteProfesor(int $id): bool
     {
-        $id = (int) $columna['idProfesores'];
-        $dni = (string) $columna['dni'];
-        $nombre = (string) $columna['nombre'];
-        $apellido = (string) $columna['apellido'];
-        $email = $columna['email'] ? (string) $columna['email'] : null;
-        $telefono = $columna['telefono'] ? (string) $columna['telefono'] : null;
-        $activo = (bool) $columna['activo'];
-        $usuario_id = isset($columna['usuario_id']) ? (int) $columna['usuario_id'] : null;
+        $sql = "UPDATE profesores SET activo = 0 WHERE idProfesores = ?";
+        return $this->executeNonQuery($sql, [$id]);
+    }
 
-        $profesor = new Profesor(
-            $id,
-            $dni,
-            $nombre,
-            $apellido,
-            $email,
-            $telefono,
-            $activo,
-            $usuario_id
+    // 🔹 Elimina profesor por usuario_id (borrado físico)
+    public function eliminarPorUsuarioId(int $usuario_id): bool
+    {
+        $sql = "DELETE FROM profesores WHERE usuario_id = ?";
+        return $this->executeNonQuery($sql, [$usuario_id]);
+    }
+
+    // 🔹 Asigna un curso a un profesor
+    public function asignarCursoAProfesor(int $idProfesor, int $idCurso): bool
+    {
+        $sql = "INSERT INTO profesor_curso (id_profesor, id_curso) VALUES (?, ?)";
+        return $this->executeNonQuery($sql, [$idProfesor, $idCurso]);
+    }
+
+    // 🔹 Obtiene los cursos de un profesor
+    public function getCursosDelProfesor(int $idProfesor): array
+    {
+        $sql = "SELECT c.* FROM cursos c 
+                INNER JOIN profesor_curso pc ON c.idCurso = pc.id_curso 
+                WHERE pc.id_profesor = ?";
+        $resultado = $this->executeQuery($sql, [$idProfesor]);
+
+        $cursos = [];
+        while ($fila = $resultado->fetch_assoc()) {
+            $cursos[] = $fila;
+        }
+
+        return $cursos;
+    }
+
+    // 🔹 Elimina una relación curso-profesor
+    public function eliminarCursoDelProfesor(int $idProfesor, int $idCurso): bool
+    {
+        $sql = "DELETE FROM profesor_curso WHERE id_profesor = ? AND id_curso = ?";
+        return $this->executeNonQuery($sql, [$idProfesor, $idCurso]);
+    }
+
+    // 🔹 Carga un objeto Profesor desde una fila
+    protected function doLoad(array $columna): Profesor
+    {
+        return new Profesor(
+            (int)$columna['idProfesores'],
+            $columna['dni'] ?? null,
+            $columna['nombre'] ?? '',
+            $columna['apellido'] ?? '',
+            $columna['email'] ?? null,
+            $columna['telefono'] ?? null,
+            (bool)$columna['activo'],
+            isset($columna['usuario_id']) ? (int)$columna['usuario_id'] : null
         );
-        return $profesor;
     }
-    private $idProfesor;
-
 }
-
-?>
