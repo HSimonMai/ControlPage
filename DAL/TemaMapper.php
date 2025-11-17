@@ -126,6 +126,23 @@ class TemaMapper extends AbstractMapper
         $conexion->close();
         return $ok;
     }
+public function getUltimoNumeroClase(int $idProfesor, int $idCurso): int {
+    $conexion = new mysqli("localhost", "root", "2901", "control");
+    if ($conexion->connect_error) die("Error de conexión: " . $conexion->connect_error);
+    $conexion->set_charset("utf8");
+
+    $stmt = $conexion->prepare("SELECT MAX(numero_clase) AS maximo FROM temas WHERE id_profesor = ? AND idCurso = ?");
+    $stmt->bind_param("ii", $idProfesor, $idCurso);
+    $stmt->execute();
+    $result = $stmt->get_result()->fetch_assoc();
+
+    $stmt->close();
+    $conexion->close();
+
+    return $result['maximo'] !== null ? intval($result['maximo']) : 0;
+}
+
+
 
     // 🔹 Mapear fila a objeto Tema
     protected function mapRowToObject(array $row): Tema
@@ -147,4 +164,5 @@ class TemaMapper extends AbstractMapper
 
     protected function doLoad($columna) { return $this->mapRowToObject($columna); }
 }
+
 ?>

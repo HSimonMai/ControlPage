@@ -9,12 +9,12 @@ class TutorDAL extends AbstractMapper
     {
         $this->setConsulta("
             SELECT 
-                t.idTutores, 
-                t.Nombre AS TutorNombre, 
-                t.Apellido AS TutorApellido, 
-                t.Dni AS TutorDni,
-                t.Email, 
-                t.Telefono,
+                t.idTutores AS id,
+                t.Nombre AS nombre,
+                t.Apellido AS apellido,
+                t.Dni AS dni,
+                t.Email AS email,
+                t.Telefono AS telefono,
                 a.idAlumnos,
                 a.Nombre AS AlumnoNombre, 
                 a.Apellido AS AlumnoApellido, 
@@ -29,41 +29,58 @@ class TutorDAL extends AbstractMapper
 
         $filas = $this->FindAll([$idCurso]);
 
-        // 🔹 Agrupar tutores y sus alumnos
         $tutores = [];
         foreach ($filas as $fila) {
             $idTutor = $fila->id;
             if (!isset($tutores[$idTutor])) {
-                $tutores[$idTutor] = $fila;
+                $tutores[$idTutor] = $this->doLoad((array)$fila);
             } else {
-                $tutores[$idTutor]->alumnos = array_merge(
-                    $tutores[$idTutor]->alumnos,
-                    $fila->alumnos
-                );
+                if (!empty($fila->AlumnoNombre)) {
+                    $tutores[$idTutor]->alumnos[] = [
+                        "nombre" => $fila->AlumnoNombre,
+                        "apellido" => $fila->AlumnoApellido,
+                        "dni" => $fila->AlumnoDni
+                    ];
+                }
             }
         }
         return array_values($tutores);
     }
 
-    protected function doLoad($columna): Tutor
+    public function findAllTutor(): array
     {
-        $alumnos = [];
-        if (!empty($columna["AlumnoNombre"])) {
-            $alumnos[] = [
-                "nombre" => $columna["AlumnoNombre"],
-                "apellido" => $columna["AlumnoApellido"],
-                "dni" => $columna["AlumnoDni"]
-            ];
+        $this->setConsulta("
+            SELECT 
+                idTutores AS id,
+                Nombre AS nombre,
+                Apellido AS apellido,
+                Dni AS dni,
+                Email AS email,
+                Telefono AS telefono
+            FROM tutores
+            ORDER BY Apellido, Nombre
+        ");
+
+        $filas = $this->FindAll();
+        $tutores = [];
+
+        foreach ($filas as $fila) {
+            $tutores[] = $this->doLoad((array)$fila);
         }
 
+        return $tutores;
+    }
+
+    protected function doLoad($columna): Tutor
+    {
         return new Tutor(
-            id: (int)$columna["idTutores"],
-            nombre: $columna["TutorNombre"],
-            apellido: $columna["TutorApellido"],
-            dni: $columna["TutorDni"],
-            email: $columna["Email"],
-            telefono: $columna["Telefono"],
-            alumnos: $alumnos
+            id: isset($columna["id"]) ? (int)$columna["id"] : 0,
+            nombre: $columna["nombre"] ?? "",
+            apellido: $columna["apellido"] ?? "",
+            dni: $columna["dni"] ?? "",
+            email: $columna["email"] ?? "",
+            telefono: $columna["telefono"] ?? "",
+            alumnos: []
         );
     }
 }

@@ -14,23 +14,43 @@ class TemaController {
         return $this->temaBLL->listarTemasPorCurso($idProfesor, $idCurso);
     }
 
-    // ➕ Agregar un tema nuevo
-    public function agregarTema(array $datos, int $idProfesor, ?int $idCurso): bool {
-        $tema = new Tema(
-            $idProfesor,
-            null, // id
-            $idCurso,
-            null, // idProfesorCurso
-            !empty($datos["idtipoClase"]) ? intval($datos["idtipoClase"]) : null,
-            !empty($datos["numero_clase"]) ? intval($datos["numero_clase"]) : null,
-            trim($datos["titulo"]),
-            trim($datos["descripcion"]),
-            $datos["fecha"] ?? date('Y-m-d'),
-            isset($datos["firma_profesor"]),
-            false // firmaAutoridad
-        );
+    public function agregarTema(array $datos, int $idProfesor, ?int $idCurso): bool
+    {
+        $cantidadModulos = isset($datos["cantidad_modulos"]) ? intval($datos["cantidad_modulos"]) : 1;
 
-        return $this->temaBLL->agregarTema($tema);
+        // Si no envía número de clase → autoincrement
+        if (empty($datos["numero_clase"])) {
+            $ultimo = $this->temaBLL->obtenerUltimoNumeroClase($idProfesor, $idCurso);
+            $numeroActual = $ultimo + 1;
+        } else {
+            $numeroActual = intval($datos["numero_clase"]);
+        }
+
+        $ok = true;
+
+        for ($i = 0; $i < $cantidadModulos; $i++) {
+
+            $tema = new Tema(
+                $idProfesor,
+                null,
+                $idCurso,
+                null,
+                !empty($datos["idtipoClase"]) ? intval($datos["idtipoClase"]) : null,
+                $numeroActual + $i, // 🔹 autoincrementa para cada módulo
+                trim($datos["titulo"]),
+                trim($datos["descripcion"]),
+                $datos["fecha"] ?? date('Y-m-d'),
+                isset($datos["firma_profesor"]),
+                false 
+            );
+
+            // Inserta uno por uno
+            if (!$this->temaBLL->agregarTema($tema)) {
+                $ok = false;
+            }
+        }
+
+        return $ok;
     }
 
     // 🗑️ Eliminar tema
@@ -47,4 +67,9 @@ class TemaController {
     public function getTiposClase(): array {
         return $this->temaBLL->getTiposClase();
     }
+
+    public function getProximoNumeroClase(int $idProfesor, int $idCurso): int {
+        return $this->temaBLL->getProximoNumeroClase($idProfesor, $idCurso);
+    }
 }
+?>

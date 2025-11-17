@@ -22,10 +22,12 @@ class TemaBLL
         );
     }
 
-    public function agregarTema(Tema $tema): bool
-    {
-        return $this->mapper->insert($tema);
-    }
+public function agregarTema(Tema $tema): bool
+{
+    return $this->mapper->insert($tema);
+}
+
+
 
     public function eliminarTema(int $idTema): bool
     {
@@ -56,5 +58,14 @@ class TemaBLL
         $conexion->close();
         return $tipos;
     }
+    public function obtenerUltimoNumeroClase(int $idProfesor, int $idCurso): int
+{
+    return $this->mapper->getUltimoNumeroClase($idProfesor, $idCurso);
 }
+public function getProximoNumeroClase(int $idProfesor, int $idCurso): int {
+    return $this->mapper->getUltimoNumeroClase($idProfesor, $idCurso) + 1;
+}
+
+}
+
 ?>

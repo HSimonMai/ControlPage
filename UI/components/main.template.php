@@ -9,6 +9,8 @@ require_once("../BLL/InformeAsistenciasBLL.php");
 require_once("../Entidades/InformeAsistencia.php");
 require_once("../BLL/FaltaTotalBLL.php");
 
+
+
 class Main_template
 {
     private array $listaAlumnos;
@@ -341,7 +343,55 @@ class Main_template
 <script>
     // Ejecuta el script cuando el DOM esté completamente cargado
     document.addEventListener('DOMContentLoaded', function() {
-        // Selecciona los checkboxes usando querySelector
+
+        document.addEventListener("DOMContentLoaded", function () {
+    const fechaDesde = document.getElementById("fechaDesde");
+    const fechaHasta = document.getElementById("fechaHasta");
+    const tipoClase = document.getElementById("tipoClase");
+    const btnFiltrar = document.getElementById("btnFiltrar");
+    const btnLimpiar = document.getElementById("btnLimpiar");
+
+    // Seleccionar TODAS las filas de la tabla
+    const filas = document.querySelectorAll("table tbody tr");
+
+    btnFiltrar.addEventListener("click", () => {
+        const desde = fechaDesde.value ? new Date(fechaDesde.value) : null;
+        const hasta = fechaHasta.value ? new Date(fechaHasta.value) : null;
+        const tipo = tipoClase.value;
+
+        filas.forEach(fila => {
+            const fechaTexto = fila.dataset.fecha; // yyyy-mm-dd
+            const tipoTexto = fila.children[1].textContent.trim();
+
+            let mostrar = true;
+
+            if (desde) {
+                const fechaFila = new Date(fechaTexto);
+                if (fechaFila < desde) mostrar = false;
+            }
+            if (hasta) {
+                const fechaFila = new Date(fechaTexto);
+                if (fechaFila > hasta) mostrar = false;
+            }
+
+        
+            if (tipo && tipoTexto !== tipo) {
+                mostrar = false;
+            }
+
+            fila.style.display = mostrar ? "" : "none";
+        });
+    });
+
+    btnLimpiar.addEventListener("click", () => {
+        fechaDesde.value = "";
+        fechaHasta.value = "";
+        tipoClase.value = "";
+        filas.forEach(f => f.style.display = "");
+    });
+});
+
+
         const checkboxTaller = document.querySelector('#taller');
         const checkboxTeoria = document.querySelector('#teoria');
 
@@ -362,4 +412,4 @@ class Main_template
             console.error('No se encontraron los checkboxes con IDs #taller o #teoria');
         }
     });
-</script>
+</script>   

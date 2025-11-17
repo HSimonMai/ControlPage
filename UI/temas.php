@@ -56,6 +56,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['titulo'])) {
 // 📋 Listar temas
 $temas = $controller->listarTemas($idProfesor, $idCurso);
 $tipos = $controller->getTiposClase();
+$proximoNumero = $controller->getProximoNumeroClase($idProfesor, $idCurso);
+
 ?>
 
 <!DOCTYPE html>
@@ -109,7 +111,13 @@ $tipos = $controller->getTiposClase();
 
             <div class="col-md-4">
                 <label class="form-label">Número de clase:</label>
-                <input type="number" name="numero_clase" min="1" class="form-control">
+                <div class="col-md-4">
+    <input 
+        type="number" name="numero_clase" min="1"  class="form-control" value="<?= $proximoNumero ?>"  placeholder="Siguiente: <?= $proximoNumero ?>"  required>
+</div>
+
+
+
             </div>
 
             <div class="col-md-6">
@@ -135,8 +143,15 @@ $tipos = $controller->getTiposClase();
             <div class="col-12 text-end">
                 <button class="btn btn-primary"><i class="bi bi-plus-circle"></i> Agregar Tema</button>
             </div>
+            <div class="col-md-4">
+    <label class="form-label">Cantidad de módulos:</label>
+    <input type="number" name="cantidad_modulos" class="form-control" value="1" min="1" required></div>
         </form>
+
+        
     </div>
+
+
 
     <!-- 📂 Listado de temas con colapsable -->
     <div class="card p-4 mt-4">
@@ -147,34 +162,41 @@ $tipos = $controller->getTiposClase();
         </h4>
 
         <div class="collapse show" id="listaTemas">
-            <table class="table table-striped text-center">
-                <thead>
-                    <tr>
-                        <th>ID</th><th>Título</th><th>N° Clase</th><th>Fecha</th>
-                        <th>Firma Prof.</th><th>Autoridad</th><th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($temas as $f): ?>
-                    <tr>
-                        <td><?= $f->getId() ?></td>
-                        <td><?= htmlspecialchars($f->getTitulo()) ?></td>
-                        <td><?= $f->getNumeroClase() ?? '—' ?></td>
-                        <td><?= $f->getFecha() ?></td>
-                        <td><?= $f->isFirmaProfesor() ? '✅' : '❌' ?></td>
-                        <td>
-                            <input type="checkbox" class="form-check-input firmaAutoridad" data-id="<?= $f->getId() ?>" <?= $f->isFirmaAutoridad() ? 'checked' : '' ?>>
-                        </td>
-                        <td>
-                            <a href="?eliminar=<?= $f->getId() ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar este tema?')">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
+        <table class="table table-striped text-center">
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>N° Clase</th>
+            <th>Fecha</th>
+            <th>Firma Prof.</th>
+            <th>Autoridad</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($temas as $f): ?>
+        <tr>
+            <td><?= htmlspecialchars($f->getTitulo()) ?></td>
+            <td><?= $f->getNumeroClase() ?? '—' ?></td>
+            <td><?= $f->getFecha() ?></td>
+            <td><?= $f->isFirmaProfesor() ? '✅' : '❌' ?></td>
+            <td>
+                <input 
+                    type="checkbox" 
+                    class="form-check-input firmaAutoridad" 
+                    data-id="<?= $f->getId() ?>" 
+                    <?= $f->isFirmaAutoridad() ? 'checked' : '' ?>>
+            </td>
+            <td>
+                <a href="?eliminar=<?= $f->getId() ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar este tema?')">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
     </div>
 </div>
 

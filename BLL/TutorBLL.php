@@ -1,6 +1,6 @@
 <?php
-require_once(__DIR__."../../Entidades/Tutor.php");
-require_once(__DIR__."../../DAL/TutorDAL.php");
+require_once(__DIR__."/../Entidades/Tutor.php");
+require_once(__DIR__."/../DAL/TutorDAL.php");
 
 class TutorBLL
 {

@@ -9,6 +9,7 @@ require("../UI/components/mainSuperPreceptor.php");
 // Verificar si el usuario está autenticado y tiene el rol adecuado
 $usuario = unserialize($_SESSION["usuario"]);
 $idUsuario = (int) $usuario->getIdTiposUsuarios();
+$nombreUsuario = $usuario->getUserName();
 if ($idUsuario === 3 && $idUsuario === 1) {
     header('Location: ../UI/login.php');
     exit();
@@ -50,7 +51,7 @@ $listaCursos = CursoBLL::getAllCursos();
     $navbar = '
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top justify-content-center">
       <div class="container-fluid">
-          <span class="navbar-brand mx-auto">SuperPreceptor</span>
+          <span class="navbar-brand mx-auto">Bienvenido/a, ' . htmlspecialchars($nombreUsuario) . '</span>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
           </button>
